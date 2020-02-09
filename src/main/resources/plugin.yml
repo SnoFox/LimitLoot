@@ -1,0 +1,7 @@
+name: LimitLoot
+version: ${project.version}
+main: net.snofox.minecraft.limitloot.LimitLoot
+api-version: 1.13
+authors: [SnoFox]
+description: Prevent loot and other progression outside of a world boarder
+depends: ["SnoLib"]
