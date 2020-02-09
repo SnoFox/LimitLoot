@@ -1,3 +1,4 @@
+radius: 500
 ores:
   DIAMOND_ORE: COAL
   GOLD_ORE: COBBLESTONE
@@ -5,3 +6,4 @@ ores:
   EMERALD_ORE: COBBLESTONE
   LAPIS_ORE: COBBLESTONE
   NETHER_QUARTZ_ORE: NETHERRACK
+exitMessage: "&9* You have entered the deadlands. You can build, breed, and kill, but no loot will spawn"

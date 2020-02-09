@@ -1,0 +1,5 @@
+.gitignore
+.idea/
+LimitLoot.iml
+spigot/
+target/

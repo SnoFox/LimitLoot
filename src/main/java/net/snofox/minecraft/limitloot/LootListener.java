@@ -6,6 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Container;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Vehicle;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -41,10 +42,14 @@ public class LootListener implements Listener {
     public void onVehicleDestroy(final VehicleDestroyEvent ev) {
         final Vehicle vehicle = ev.getVehicle();
         if(module.shouldAllowDrops(vehicle.getLocation())) return;
-        if(!(vehicle instanceof Lootable)) return;
-        if(((Lootable) vehicle).getLootTable() == null) return;
-        ((Lootable) vehicle).setLootTable(null);
-        if(vehicle instanceof InventoryHolder) fillLoot(((InventoryHolder) vehicle).getInventory());
+        handleEntity(vehicle);
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onInteractEntity(final PlayerInteractEntityEvent ev) {
+        if(ev.getPlayer().getGameMode().equals(GameMode.SPECTATOR)) return;
+        if(module.shouldAllowDrops(ev.getRightClicked().getLocation())) return;
+        handleEntity(ev.getRightClicked());
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -97,17 +102,6 @@ public class LootListener implements Listener {
         handleBlock(state);
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onInteractEntity(final PlayerInteractEntityEvent ev) {
-        if(ev.getPlayer().getGameMode().equals(GameMode.SPECTATOR)) return;
-        if(module.shouldAllowDrops(ev.getRightClicked().getLocation())) return;
-        if(ev.getRightClicked() instanceof Lootable) {
-            Lootable lootable = (Lootable)ev.getRightClicked();
-            if(lootable.getLootTable() == null) return;
-            lootable.setLootTable(null);
-        }
-    }
-
     private void handleBlock(final BlockState state) {
         if(!(state instanceof Lootable)) return;
         if(((Lootable) state).getLootTable() == null) return;
@@ -116,6 +110,13 @@ public class LootListener implements Listener {
             fillLoot(((Container) state).getSnapshotInventory());
         }
         state.update();
+    }
+
+    private void handleEntity(final Entity entity) {
+        if(!(entity instanceof Lootable)) return;
+        if(((Lootable) entity).getLootTable() == null) return;
+        ((Lootable) entity).setLootTable(null);
+        if(entity instanceof InventoryHolder) fillLoot(((InventoryHolder) entity).getInventory());
     }
 
     private void fillLoot(final Inventory inventory) {
