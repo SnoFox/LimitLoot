@@ -17,6 +17,19 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <distributionManagement>
+        <repository>
+            <id>tblflp</id>
+            <name>Tableflip</name>
+            <url>https://artifacts.tblflp.zone/artifactory/tblflp</url>
+        </repository>
+        <snapshotRepository>
+            <id>tblflp</id>
+            <name>Tableflip Snapshots</name>
+            <url>https://artifacts.tblflp.zone/artifactory/tblflp</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <build>
         <defaultGoal>clean package</defaultGoal>
         <plugins>
@@ -28,22 +41,6 @@
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.1.0</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <createDependencyReducedPom>false</createDependencyReducedPom>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
         <resources>
@@ -63,6 +60,10 @@
             <id>tblflp</id>
             <name>Tableflip</name>
             <url>https://artifacts.tblflp.zone/artifactory/tblflp</url>
+        </repository>
+        <repository>
+            <id>tblflp-thirdparty</id>
+            <url>https://artifacts.tblflp.zone/artifactory/thirdparty</url>
         </repository>
     </repositories>
 
