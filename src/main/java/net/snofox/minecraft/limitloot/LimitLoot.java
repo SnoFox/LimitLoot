@@ -17,6 +17,7 @@ public final class LimitLoot extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        saveDefaultConfig();
         getServer().getPluginManager().registerEvents(new LootListener(this), this);
         initCraftRegions();
         getLogger().info("Loot is now limited");

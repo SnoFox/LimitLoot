@@ -6,15 +6,20 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Container;
+import org.bukkit.entity.AbstractVillager;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Vehicle;
+import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.entity.EntityBreedEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityDropItemEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
@@ -67,13 +72,27 @@ public class LootListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
+    public void onPlayerFish(final PlayerFishEvent ev) {
+        if(!ev.getState().equals(PlayerFishEvent.State.BITE)) return;
+        if(module.shouldAllowDrops(ev.getPlayer().getLocation())) return;
+        ev.setCancelled(true);
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onEntityDropItem(final EntityDropItemEvent ev) {
+        if(module.shouldAllowDrops(ev.getEntity().getLocation())) return;
+        if(!ev.getEntityType().equals(EntityType.CHICKEN)) return;
+        ev.setCancelled(true);
+    }
+
+    @EventHandler(ignoreCancelled = true)
     public void onBlockBreak(final BlockBreakEvent ev) {
         if(module.shouldAllowDrops(ev.getBlock().getLocation())) return;
         final Material replacementMat = module.getReplacement(ev.getBlock());
         if(replacementMat != null) {
             ev.setExpToDrop(0);
             ev.setDropItems(false);
-            ev.getBlock().getWorld().dropItemNaturally(ev.getBlock().getLocation(), new ItemStack(replacementMat, 1));
+            if(replacementMat != Material.AIR) ev.getBlock().getWorld().dropItemNaturally(ev.getBlock().getLocation(), new ItemStack(replacementMat, 1));
         }
     }
 
@@ -117,6 +136,7 @@ public class LootListener implements Listener {
         if(((Lootable) entity).getLootTable() == null) return;
         ((Lootable) entity).setLootTable(null);
         if(entity instanceof InventoryHolder) fillLoot(((InventoryHolder) entity).getInventory());
+        if(entity instanceof AbstractVillager) ((AbstractVillager) entity).setRecipes(Collections.emptyList());
     }
 
     private void fillLoot(final Inventory inventory) {
